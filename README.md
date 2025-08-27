@@ -23,20 +23,6 @@ This is v2: adds lemmatization + TF-IDF n-grams, a small Gradio demo (with API),
 
 🧰 DRF integration: minimal classifier endpoint (example below)
 
-📂 Repository structure
-.
-├── Movie_comments_NLP_v2.ipynb        # training & evaluation (v2)
-├── movie_comments.csv                 # sample dataset (text,label)
-├── spoiler_detector.pkl               # trained classifier
-├── vec.pkl                            # TF-IDF vectorizer (with lemmatizer analyzer)
-├── moviesite/                         # Django REST backend (DRF)
-│   └── movie/
-│       ├── serializers.py             # uses model + vectorizer
-│       └── nlp_utils.py               # lemma_tokens() (recommended)
-├── demo_app.py                        # simple Gradio demo (optional)
-├── requirements.txt
-└── README.md
-
 
 ⚠️ If your vectorizer was trained with a custom analyzer (e.g. lemma_tokens), 
 keep the same function available at load time. 
@@ -126,7 +112,6 @@ result = client.predict(
 print(result)
 
 
-The share link expires in ~1 week. For a permanent URL, deploy to Hugging Face Spaces (or your own host).
 
 🧩 Django REST API (DRF)
 
@@ -134,7 +119,7 @@ Put artifacts (spoiler_detector.pkl, vec.pkl) into the Django project base dir (
 
 Ensure your analyzer function is importable in Django:
 
-moviesite/movie/nlp_utils.py (example)
+moviesite/movie/serializers.py (example)
 
 import re
 from razdel import tokenize
@@ -186,17 +171,6 @@ cd moviesite
 python manage.py migrate
 python manage.py runserver
 
-
-Example request (adjust to your actual endpoint):
-
-curl -X POST http://127.0.0.1:8000/api/check_comment/ \
-  -H "Content-Type: application/json" \
-  -d '{"text": "Он умирает в финале..."}'
-
-
-Example response:
-
-{"label": "spoiler"}
 
 Accuracy ~1.00 on this small dataset; will validate with cross-validation and harder test sets in the next iteration.
 
